@@ -1,18 +1,33 @@
+/* Basic styling */
 body {
     font-family: Arial, sans-serif;
+}
+
+/* Flexbox navigation bar */
+.navbar {
+    display: flex;
+    background-color: #0a0a1a; /* dark blue */
+    overflow: auto;
+    padding: 10px;
+}
+
+/* Navigation links */
+.navbar a {
+    color: #c7d4e8; /* light blue */
+    text-decoration: none;
+    padding: 14px 20px;
+    text-align: center;
+}
+
+/* Change color on hover */
+.navbar a:hover {
+    background-color: #545454; /* dark gray */
+    color: #c7d4e8; /* light blue */
+}
+
+/* Explanation section */
+.explanation {
     padding: 20px;
-}
-
-#login, #register {
-    margin-top: 20px;
-}
-
-input[type=text], input[type=password] {
-    display: block;
-    margin-bottom: 10px;
-    padding: 5px;
-}
-
-button {
-    padding: 5px 10px;
+    background-color: #20283a; /* slightly lighter dark blue */
+    color: #c7d4e8; /* light blue */
 }

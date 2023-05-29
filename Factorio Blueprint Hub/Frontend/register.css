@@ -1,0 +1,43 @@
+/* Basic styling */
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #0a0a1a; /* dark blue */
+}
+
+/* Centered form */
+.form-container {
+    background-color: #20283a; /* slightly lighter dark blue */
+    color: #c7d4e8; /* light blue */
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+}
+
+/* Style for the form inputs */
+.form-container input {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+/* Style for the submit button */
+.form-container button {
+    background-color: #545454; /* dark gray */
+    color: #c7d4e8; /* light blue */
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+}
+
+/* Change button color on hover */
+.form-container button:hover {
+    background-color: #404040; /* slightly lighter dark gray */
+}
