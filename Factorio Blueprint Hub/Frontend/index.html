@@ -1,24 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Page</title>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="navbar">
-    <a href="#">Home</a>
-    <a href="#">Browse Blueprints</a>
-    <a href="#">Upload Blueprint</a>
-    <a href="#">My Account</a>
+<nav class="navbar navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="index.html">Home</a>
+        <a class="navbar-brand" href="#">Browse Blueprints</a>
+        <a class="navbar-brand" href="uploadBlueprint.html">Upload Blueprint</a>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="explanation text-center">
+                <h1>Welcome to Factorio Blueprint Hub!</h1>
+                <p>Here, you can browse through a vast library of blueprints submitted by other Factorio players. Find the perfect setup for your factory, or submit your own designs to share with the community.</p>
+                <p>From production layouts to defensive structures, transport systems and more, whatever you're looking for, you're sure to find it here. Happy building!</p>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div class="explanation">
-    <h2>Welcome to Factorio Blueprint Hub!</h2>
-    <p>Here, you can browse through a vast library of blueprints submitted by other Factorio players. Find the perfect setup for your factory, or submit your own designs to share with the community.</p>
-    <p>From production layouts to defensive structures, transport systems and more, whatever you're looking for, you're sure to find it here. Happy building!</p>
-</div>
-
-<!-- The rest of your webpage content goes here -->
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
