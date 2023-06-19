@@ -1,5 +1,5 @@
 body {
-    background-color: #1a1a1a;
+    background-color: #1a1a1a !important;
     color: #f0f0f0;
     font-family: Arial, sans-serif;
     padding: 20px;
@@ -62,4 +62,65 @@ button[type="submit"]:hover {
 .navbar a:hover {
     background-color: #545454;
     color: #f0f0f0;
+}
+
+.blueprints-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px;
+}
+
+.blueprint-item {
+    flex-basis: calc(33.33% - 20px);
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+    background-color: beige;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.blueprint-item img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+.blueprint-item .username {
+    padding: 10px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.blueprint-details {
+    max-width: 400px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 20px;
+    background-color: #2e2e2e;
+    border-radius: 4px;
+}
+
+#blueprintImageContainer {
+    margin-bottom: 20px;
+}
+
+#blueprintImageContainer img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+#blueprintUsername {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+#blueprintDate {
+    color: #c7d4e8;
+    margin-bottom: 10px;
+}
+
+#blueprintDescription {
+    margin-bottom: 10px;
 }
