@@ -71,8 +71,12 @@ app.get('/', (req, res) => {
 });
 
 // Serve blueprint-detail.html
-// Serve blueprint detail JSON data
 app.get('/blueprints/:id', (req, res) => {
+    res.sendFile(path.join(__dirname, '../Frontend/blueprint-detail.html'));
+});
+
+// Serve blueprint detail JSON data
+app.get('/api/blueprints/:id', (req, res) => {
     const blueprintId = req.params.id;
 
     db.get('SELECT Blueprints.*, Users.Username FROM Blueprints INNER JOIN Users ON Blueprints.UserID = Users.ID WHERE Blueprints.ID = ?', [blueprintId], (err, row) => {
@@ -98,7 +102,7 @@ app.get('/blueprints/:id', (req, res) => {
         res.json(blueprint);
     });
 });
-// Serve blueprint-detail.html
+
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Server is up and running on port ${port}`));
