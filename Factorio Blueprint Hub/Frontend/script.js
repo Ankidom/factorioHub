@@ -10,10 +10,11 @@ fetch('/blueprints')
 
             // Maak een ankerlink rondom de blueprint
             const link = document.createElement('a');
-            link.href = '/blueprints/' + blueprint.id;
+            link.href = '/blueprint-detail?id=' + blueprint.id;
+
 
             const image = document.createElement('img');
-            image.src = 'public/uploads/' + blueprint.image;
+            image.src = '/uploads/' + blueprint.image;
             image.alt = 'Blueprint Image';
 
             const username = document.createElement('p');

@@ -11,7 +11,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../Frontend')));
-app.use('/uploads', express.static(path.join(__dirname, '../Frontend/public/uploads')));
+app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 
 // Initialize SQLite database
 let db = new sqlite3.Database('./db.sqlite', (err) => {
@@ -42,6 +42,40 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
+app.post('/blueprints', upload.single('blueprintImage'), (req, res) => {
+    const { username, email, blueprintTitle, blueprintString } = req.body;
+    const { filename } = req.file;
+    if (!username || !email || !blueprintTitle || !blueprintString || !filename) {
+        return res.status(400).send('Please fill in all required fields.');
+    }// Insert user if not already exists
+    db.run(
+        'INSERT OR IGNORE INTO Users (Username, Email) VALUES (?, ?)',
+        [username, email],
+        function (err) {
+            if (err) {
+                console.error(err.message);
+                return res.status(500).send('An error occurred while processing the request.');
+            }
+
+            // Get the inserted/updated user ID
+            const userId = this.lastID;
+
+            // Insert blueprint
+            db.run(
+                'INSERT INTO Blueprints (Title, BlueprintString, Image, UserID) VALUES (?, ?, ?, ?)',
+                [blueprintTitle, blueprintString, filename, userId],
+                function (err) {
+                    if (err) {
+                        console.error(err.message);
+                        res.status(500).send(`uploadBlueprint.html?success=false&message=${encodeURIComponent(err.message)}`);                    }
+
+                    res.redirect(`/uploadBlueprint.html?success=true&message=${encodeURIComponent('Blueprint uploaded successfully!')}`);
+
+                }
+            );
+        }
+    );
+});
 
 app.get('/blueprints', (req, res) => {
     db.all('SELECT Blueprints.*, Users.Username FROM Blueprints INNER JOIN Users ON Blueprints.UserID = Users.ID', (err, rows) => {
@@ -64,16 +98,21 @@ app.get('/blueprints', (req, res) => {
     });
 });
 
-
 // Serve index.html
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../Frontend/index.html'));
 });
 
 // Serve blueprint-detail.html
-app.get('/blueprints/:id', (req, res) => {
+app.get('/blueprint-detail/:id', (req, res) => {
     res.sendFile(path.join(__dirname, '../Frontend/blueprint-detail.html'));
 });
+
+// Serve blueprint-detail.html
+app.get('/blueprint-detail', (req, res) => {
+    res.sendFile(path.join(__dirname, '../Frontend/blueprint-detail.html'));
+});
+
 
 // Serve blueprint detail JSON data
 app.get('/api/blueprints/:id', (req, res) => {
@@ -102,7 +141,6 @@ app.get('/api/blueprints/:id', (req, res) => {
         res.json(blueprint);
     });
 });
-
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Server is up and running on port ${port}`));
