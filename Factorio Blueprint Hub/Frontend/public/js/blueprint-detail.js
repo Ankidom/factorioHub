@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('blueprintDescription').textContent = data.blueprintString;
 
             const image = document.createElement('img');
-            image.src = 'public/uploads/' + data.image;
+            image.src = '/uploads/' + data.image;
             image.alt = 'Blueprint Image';
             document.getElementById('blueprintImageContainer').appendChild(image);
         })

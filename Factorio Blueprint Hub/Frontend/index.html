@@ -11,12 +11,16 @@
 <nav class="navbar navbar-dark bg-dark">
     <div class="container">
         <a class="navbar-brand" href="index.html">Home</a>
-        <a class="navbar-brand" href="#">Browse Blueprints</a>
         <a class="navbar-brand" href="uploadBlueprint.html">Upload Blueprint</a>
+        <a class="navbar-brand" href="about.html">About</a>
     </div>
 </nav>
 
 <div class="container mt-5">
+    <input type="text" id="titleFilter" placeholder="Filter by title">
+    <select id="tagFilter" class="form-select">
+        <option value="">Select a tag</option>
+    </select>
     <div class="blueprints-container" id="blueprintsContainer"></div>
 </div>
 

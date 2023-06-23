@@ -10,36 +10,66 @@ window.onload = function() {
             showErrorMessage(decodeURIComponent(message));
         }
     }
+
+    populateTagsDropdown();
 }
+
+async function populateTagsDropdown() {
+    const tagsDropdown = document.getElementById('tagsDropdown');
+
+    try {
+        const response = await fetch('/available-tags');
+        const tags = await response.json();
+
+        tags.forEach(tag => {
+            const listItem = document.createElement('li');
+            listItem.innerHTML = `<a class="dropdown-item" href="#" data-tag-id="${tag.id}">${tag.name}</a>`;
+            listItem.addEventListener('click', () => {
+                addTagToInput(tag);
+            });
+            tagsDropdown.appendChild(listItem);
+        });
+    } catch (error) {
+        console.error('An error occurred while fetching available tags:', error);
+    }
+}
+
+function addTagToInput(tag) {
+    const selectedTagsInput = document.getElementById('selectedTags');
+    if (selectedTagsInput) {
+        selectedTagsInput.value += tag.id + ',';
+    }
+}
+
 
 document.getElementById('uploadForm').addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    // Maak een nieuwe FormData instantie
     const formData = new FormData(e.target);
+    const selectedTags = document.getElementById('selectedTags').value.split(',').map(tagId => tagId.trim()).filter(tagId => tagId !== '');
 
-    // Log de velden in de FormData
-    for (var pair of formData.entries()) {
-        console.log(pair[0]+ ', '+ pair[1]);
+    if (selectedTags.length === 0 || (selectedTags.length === 1 && selectedTags[0] === '')) {
+        showErrorMessage('Please select at least one tag.');
+        return;
     }
+
+    formData.append('tags', JSON.stringify(selectedTags));
 
     try {
         const response = await fetch('/blueprints', {
             method: 'POST',
-            body: formData  // Gebruik formData in plaats van JSON.stringify
+            body: formData
         });
 
         if (response.ok) {
-            // Server heeft een redirect URL teruggestuurd, dus navigeer daarheen
             window.location.href = response.url;
         } else {
-            // Bij een fout, interpreteer het antwoord als tekst en toon het als een foutmelding
             const error = await response.text();
             showErrorMessage(error);
         }
     } catch (error) {
-        console.error('Er is een fout opgetreden:', error);
-        showErrorMessage('Er is een fout opgetreden bij het uploaden van de blueprint.');
+        console.error('An error occurred:', error);
+        showErrorMessage('An error occurred while uploading the blueprint.');
     }
 });
 
@@ -67,4 +97,5 @@ function clearForm() {
     document.getElementById('blueprintTitle').value = '';
     document.getElementById('blueprintString').value = '';
     document.getElementById('filename').value = '';
+    document.getElementById('tags').value = '';
 }

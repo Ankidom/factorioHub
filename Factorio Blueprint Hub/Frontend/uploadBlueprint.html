@@ -6,13 +6,14 @@
     <title>Upload Blueprint</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="uploadBlueprint.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <nav class="navbar navbar-dark bg-dark">
     <div class="container">
         <a class="navbar-brand" href="index.html">Home</a>
-        <a class="navbar-brand" href="#">Browse Blueprints</a>
         <a class="navbar-brand" href="uploadBlueprint.html">Upload Blueprint</a>
+        <a class="navbar-brand" href="about.html">About</a>
     </div>
 </nav>
 
@@ -24,23 +25,40 @@
             <form id="uploadForm" class="upload-form" method="POST" action="/blueprints" enctype="multipart/form-data">
                 <div class="mb-3">
                     <label for="username" class="form-label">Username</label>
-                    <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username" required>
+                    <input type="text" class="form-control" id="username" name="username"
+                           placeholder="Enter your username" required>
                 </div>
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email"
+                           required>
                 </div>
                 <div class="mb-3">
                     <label for="blueprintTitle" class="form-label">Blueprint Title</label>
-                    <input type="text" class="form-control" id="blueprintTitle" name="blueprintTitle" placeholder="Enter the blueprint title" required>
+                    <input type="text" class="form-control" id="blueprintTitle" name="blueprintTitle"
+                           placeholder="Enter the blueprint title" required>
                 </div>
                 <div class="mb-3">
                     <label for="blueprintString" class="form-label">Blueprint String</label>
-                    <textarea class="form-control" id="blueprintString" name="blueprintString" rows="5" placeholder="Enter the blueprint string" required></textarea>
+                    <textarea class="form-control" id="blueprintString" name="blueprintString" rows="5"
+                              placeholder="Enter the blueprint string" required></textarea>
                 </div>
                 <div class="mb-3">
                     <label for="filename" class="form-label">Blueprint Image</label>
-                    <input type="file" class="form-control" id="filename" name="blueprintImage" accept="image/*" required>
+                    <input type="file" class="form-control" id="filename" name="blueprintImage" accept="image/*"
+                           required>
+                </div>
+                <div class="mb-3">
+                    <label for="tags" class="form-label">Tags</label>
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="tagsDropdownButton" data-bs-toggle="dropdown" aria-expanded="false">
+                            Selecteer tags
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="tagsDropdownButton" id="tagsDropdown">
+                            <!-- Tags worden dynamisch gegenereerd door JavaScript -->
+                        </ul>
+                    </div>
+                    <input type="hidden" id="selectedTags" name="selectedTags" />
                 </div>
                 <button type="submit" class="btn btn-primary">Upload</button>
             </form>
