@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Update Blueprint</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="navbar navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand" href="index.html">Home</a>
+    <a class="navbar-brand" href="uploadBlueprint.html">Upload Blueprint</a>
+    <a class="navbar-brand" href="about.html">About</a>
+  </div>
+</nav>
+<div class="container mt-5">
+  <form id="updateBlueprintForm">
+    <label for="title">Title</label>
+    <input type="text" id="title" name="title">
+
+    <label for="blueprintString">Blueprint String</label>
+    <input type="text" id="blueprintString" name="blueprintString">
+
+    <label for="image">Image</label>
+    <input type="file" id="image" name="image">
+
+    <button type="submit" class="btn btn-primary mt-3">Update Blueprint</button>
+  </form>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="public/js/blueprint-update.js"></script>
+</body>
+</html>

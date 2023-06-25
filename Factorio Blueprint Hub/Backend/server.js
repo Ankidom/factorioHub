@@ -280,6 +280,118 @@ app.get('/api/blueprints/:id', (req, res) => {
     });
 });
 
+app.delete('/api/blueprints/:id', (req, res) => {
+    const blueprintId = req.params.id;
+
+    db.run('DELETE FROM Blueprints WHERE ID = ?', [blueprintId], (err) => {
+        if (err) {
+            console.error(err.message);
+            return res.status(500).send('An error occurred while deleting the blueprint.');
+        }
+
+        res.status(200).send('Blueprint successfully deleted');
+    });
+});
+
+// Function for blueprint update
+function updateBlueprint(res, blueprintId, blueprintTitle, blueprintString, filename, selectedTags) {
+    // Update blueprint
+    db.run(
+        'UPDATE Blueprints SET Title = ?, BlueprintString = ?, Image = ? WHERE ID = ?',
+        [blueprintTitle, blueprintString, filename, blueprintId],
+        function (err) {
+            if (err) {
+                console.error(err.message);
+                return res.status(500).send(`uploadBlueprint.html?success=false&message=${encodeURIComponent(err.message)}`);
+            }
+
+            // Remove old tags for the blueprint
+            db.run(
+                'DELETE FROM Blueprint_Tag WHERE BlueprintID = ?',
+                [blueprintId],
+                function (err) {
+                    if (err) {
+                        console.error(err.message);
+                        return res.status(500).send(`uploadBlueprint.html?success=false&message=${encodeURIComponent(err.message)}`);
+                    }
+
+                    // Insert new tags for the blueprint
+                    const insertStatement = db.prepare(
+                        'INSERT INTO Blueprint_Tag (BlueprintID, TagID) VALUES (?, ?)'
+                    );
+
+                    selectedTags.forEach(tagId => {
+                        insertStatement.run(blueprintId, tagId, function (err) {
+                            if (err) {
+                                console.error('Error inserting tagId:', err.message);
+                                return res.status(500).send(`uploadBlueprint.html?success=false&message=${encodeURIComponent(err.message)}`);
+                            }
+                        });
+                    });
+
+                    insertStatement.finalize();
+
+                    res.redirect(`/uploadBlueprint.html?success=true&message=${encodeURIComponent('Blueprint updated successfully!')}`);
+                }
+            );
+        }
+    );
+}
+
+app.put('/api/blueprints/:id', (req, res) => {
+    const blueprintId = req.params.id;
+    const { title, blueprintString, image, tags } = req.body;
+
+    db.run(
+        'UPDATE Blueprints SET Title = ?, BlueprintString = ?, Image = ? WHERE ID = ?',
+        [title, blueprintString, image, blueprintId],
+        function (err) {
+            if (err) {
+                console.error(err.message);
+                return res.status(500).json({ error: err.message });
+            }
+
+            db.run(
+                'DELETE FROM Blueprint_Tag WHERE BlueprintID = ?',
+                [blueprintId],
+                function (err) {
+                    if (err) {
+                        console.error(err.message);
+                        return res.status(500).json({ error: err.message });
+                    }
+
+                    const selectedTags = JSON.parse(tags);
+                    if (!Array.isArray(selectedTags) || selectedTags.length === 0) {
+                        return res.status(400).json({ error: 'Please select at least one tag.' });
+                    }
+
+                    const insertStatement = db.prepare(
+                        'INSERT INTO Blueprint_Tag (BlueprintID, TagID) VALUES (?, ?)'
+                    );
+
+                    selectedTags.forEach(tagId => {
+                        insertStatement.run(blueprintId, tagId, function (err) {
+                            if (err) {
+                                console.error('Error inserting tagId:', err.message);
+                                return res.status(500).json({ error: err.message });
+                            }
+                        });
+                    });
+
+                    insertStatement.finalize();
+
+                    res.json({ message: 'Blueprint updated successfully.' });
+                }
+            );
+        }
+    );
+});
+
+
+
+
+
+
 // Serve available tags
 app.get('/available-tags', (req, res) => {
     db.all('SELECT * FROM Tags', (err, rows) => {
