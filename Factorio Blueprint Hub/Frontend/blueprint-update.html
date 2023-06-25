@@ -4,18 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Update Blueprint</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<nav class="navbar navbar-dark bg-dark">
-  <div class="container">
-    <a class="navbar-brand" href="index.html">Home</a>
-    <a class="navbar-brand" href="uploadBlueprint.html">Upload Blueprint</a>
-    <a class="navbar-brand" href="about.html">About</a>
-  </div>
+<nav class="navbar">
+  <a class="navbar-logo" href="index.html">Factorio Blueprint Hub</a>
+  <ul class="navbar-menu">
+    <li class="navbar-menu-item">
+      <a class="navbar-menu-link" href="index.html">Home</a>
+    </li>
+    <li class="navbar-menu-item">
+      <a class="navbar-menu-link" href="uploadBlueprint.html">Upload Blueprint</a>
+    </li>
+    <li class="navbar-menu-item">
+      <a class="navbar-menu-link" href="about.html">About</a>
+    </li>
+  </ul>
 </nav>
-<div class="container mt-5">
+
+<div class="container">
   <form id="updateBlueprintForm">
     <label for="title">Title</label>
     <input type="text" id="title" name="title">
@@ -23,9 +30,7 @@
     <label for="blueprintString">Blueprint String</label>
     <input type="text" id="blueprintString" name="blueprintString">
 
-    <button type="submit" class="btn btn-primary mt-3">Update Blueprint</button>
+    <button type="submit" class="btn ">Update Blueprint</button>
   </form>
 </div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 <script src="public/js/blueprint-update.js"></script>
