@@ -75,41 +75,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 app.post('/blueprints', upload.single('blueprintImage'), (req, res) => {
-    const { username, email, blueprintTitle, blueprintString } = req.body;
-    const { filename } = req.file;
-    if (!username || !email || !blueprintTitle || !blueprintString || !filename) {
-        return res.status(400).send('Please fill in all required fields.');
-    }// Insert user if not already exists
-    db.run(
-        'INSERT OR IGNORE INTO Users (Username, Email) VALUES (?, ?)',
-        [username, email],
-        function (err) {
-            if (err) {
-                console.error(err.message);
-                return res.status(500).send('An error occurred while processing the request.');
-            }
-
-            // Get the inserted/updated user ID
-            const userId = this.lastID;
-
-            // Insert blueprint
-            db.run(
-                'INSERT INTO Blueprints (Title, BlueprintString, Image, UserID) VALUES (?, ?, ?, ?)',
-                [blueprintTitle, blueprintString, filename, userId],
-                function (err) {
-                    if (err) {
-                        console.error(err.message);
-                        res.status(500).send(`uploadBlueprint.html?success=false&message=${encodeURIComponent(err.message)}`);                    }
-
-                    res.redirect(`/uploadBlueprint.html?success=true&message=${encodeURIComponent('Blueprint uploaded successfully!')}`);
-
-                }
-            );
-        }
-    );
-});
-
-app.post('/blueprints', upload.single('blueprintImage'), (req, res) => {
     const { username, email, blueprintTitle, blueprintString, tags } = req.body;
     const { filename } = req.file;
     if (!username || !email || !blueprintTitle || !blueprintString || !filename || !tags) {
@@ -142,6 +107,7 @@ app.post('/blueprints', upload.single('blueprintImage'), (req, res) => {
                     }
 
                     userId = row.ID;
+                    console.log('Inserting Tag:', selectedTags); // Gebruik selectedTags in plaats van tagId
 
                     insertBlueprint(res, userId, blueprintTitle, blueprintString, filename, selectedTags);
                 });
@@ -152,8 +118,11 @@ app.post('/blueprints', upload.single('blueprintImage'), (req, res) => {
     );
 });
 
+
+
 // Create function for blueprint insertion
 function insertBlueprint(res, userId, blueprintTitle, blueprintString, filename, selectedTags) {
+
     // Insert blueprint
     db.run(
         'INSERT INTO Blueprints (Title, BlueprintString, Image, UserID) VALUES (?, ?, ?, ?)',
@@ -200,7 +169,6 @@ app.get('/blueprints', (req, res) => {
             console.error(err.message);
             return res.status(500).send('An error occurred while fetching blueprint data.');
         }
-        console.log(rows);
         // Group blueprints by ID, mapping each group to an object that represents a blueprint with an array of its tags
         const groupedBlueprints = rows.reduce((acc, row) => {
             if (!acc[row.ID]) {
@@ -293,104 +261,22 @@ app.delete('/api/blueprints/:id', (req, res) => {
     });
 });
 
-// Function for blueprint update
-function updateBlueprint(res, blueprintId, blueprintTitle, blueprintString, filename, selectedTags) {
-    // Update blueprint
-    db.run(
-        'UPDATE Blueprints SET Title = ?, BlueprintString = ?, Image = ? WHERE ID = ?',
-        [blueprintTitle, blueprintString, filename, blueprintId],
-        function (err) {
-            if (err) {
-                console.error(err.message);
-                return res.status(500).send(`uploadBlueprint.html?success=false&message=${encodeURIComponent(err.message)}`);
-            }
-
-            // Remove old tags for the blueprint
-            db.run(
-                'DELETE FROM Blueprint_Tag WHERE BlueprintID = ?',
-                [blueprintId],
-                function (err) {
-                    if (err) {
-                        console.error(err.message);
-                        return res.status(500).send(`uploadBlueprint.html?success=false&message=${encodeURIComponent(err.message)}`);
-                    }
-
-                    // Insert new tags for the blueprint
-                    const insertStatement = db.prepare(
-                        'INSERT INTO Blueprint_Tag (BlueprintID, TagID) VALUES (?, ?)'
-                    );
-
-                    selectedTags.forEach(tagId => {
-                        insertStatement.run(blueprintId, tagId, function (err) {
-                            if (err) {
-                                console.error('Error inserting tagId:', err.message);
-                                return res.status(500).send(`uploadBlueprint.html?success=false&message=${encodeURIComponent(err.message)}`);
-                            }
-                        });
-                    });
-
-                    insertStatement.finalize();
-
-                    res.redirect(`/uploadBlueprint.html?success=true&message=${encodeURIComponent('Blueprint updated successfully!')}`);
-                }
-            );
-        }
-    );
-}
 
 app.put('/api/blueprints/:id', (req, res) => {
-    const blueprintId = req.params.id;
-    const { title, blueprintString, image, tags } = req.body;
+    const id = req.params.id;
+    const { title, blueprintString } = req.body;
 
-    db.run(
-        'UPDATE Blueprints SET Title = ?, BlueprintString = ?, Image = ? WHERE ID = ?',
-        [title, blueprintString, image, blueprintId],
+    db.run(`UPDATE Blueprints SET Title = ?, BlueprintString = ? WHERE ID = ?`,
+        [title, blueprintString, id],
         function (err) {
             if (err) {
-                console.error(err.message);
                 return res.status(500).json({ error: err.message });
             }
 
-            db.run(
-                'DELETE FROM Blueprint_Tag WHERE BlueprintID = ?',
-                [blueprintId],
-                function (err) {
-                    if (err) {
-                        console.error(err.message);
-                        return res.status(500).json({ error: err.message });
-                    }
-
-                    const selectedTags = JSON.parse(tags);
-                    if (!Array.isArray(selectedTags) || selectedTags.length === 0) {
-                        return res.status(400).json({ error: 'Please select at least one tag.' });
-                    }
-
-                    const insertStatement = db.prepare(
-                        'INSERT INTO Blueprint_Tag (BlueprintID, TagID) VALUES (?, ?)'
-                    );
-
-                    selectedTags.forEach(tagId => {
-                        insertStatement.run(blueprintId, tagId, function (err) {
-                            if (err) {
-                                console.error('Error inserting tagId:', err.message);
-                                return res.status(500).json({ error: err.message });
-                            }
-                        });
-                    });
-
-                    insertStatement.finalize();
-
-                    res.json({ message: 'Blueprint updated successfully.' });
-                }
-            );
+            res.json({ message: 'Blueprint updated successfully.' });
         }
     );
 });
-
-
-
-
-
 
 // Serve available tags
 app.get('/available-tags', (req, res) => {

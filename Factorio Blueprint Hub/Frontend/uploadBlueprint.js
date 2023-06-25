@@ -24,7 +24,8 @@ async function populateTagsDropdown() {
         tags.forEach(tag => {
             const listItem = document.createElement('li');
             listItem.innerHTML = `<a class="dropdown-item" href="#" data-tag-id="${tag.id}">${tag.name}</a>`;
-            listItem.addEventListener('click', () => {
+            listItem.addEventListener('click', (event) => {
+                event.preventDefault();
                 addTagToInput(tag);
             });
             tagsDropdown.appendChild(listItem);
@@ -36,8 +37,11 @@ async function populateTagsDropdown() {
 
 function addTagToInput(tag) {
     const selectedTagsInput = document.getElementById('selectedTags');
+    const tagsDropdownButton = document.getElementById('tagsDropdownButton');
+
     if (selectedTagsInput) {
         selectedTagsInput.value += tag.id + ',';
+        tagsDropdownButton.textContent = tag.name;
     }
 }
 
@@ -47,13 +51,22 @@ document.getElementById('uploadForm').addEventListener('submit', async (e) => {
 
     const formData = new FormData(e.target);
     const selectedTags = document.getElementById('selectedTags').value.split(',').map(tagId => tagId.trim()).filter(tagId => tagId !== '');
+    formData.append('tags', JSON.stringify(selectedTags));
+
+    // Log the contents of the FormData object
+    for (let pair of formData.entries()) {
+        console.log(pair[0]+ ', '+ pair[1]);
+    }
+
+
 
     if (selectedTags.length === 0 || (selectedTags.length === 1 && selectedTags[0] === '')) {
         showErrorMessage('Please select at least one tag.');
         return;
     }
 
-    formData.append('tags', JSON.stringify(selectedTags));
+    // Verander de naam van de FormData entry van 'tags' naar 'selectedTags'
+    formData.append('selectedTags', JSON.stringify(selectedTags));
 
     try {
         const response = await fetch('/blueprints', {
@@ -73,8 +86,8 @@ document.getElementById('uploadForm').addEventListener('submit', async (e) => {
     }
 });
 
-function showSuccessMessage(message) {
-    const uploadMessage = document.getElementById('uploadMessage');
+    function showSuccessMessage(message) {
+        const uploadMessage = document.getElementById('uploadMessage');
     uploadMessage.innerHTML = `
         <div class="alert alert-success" role="alert">
             ${message}

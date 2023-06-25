@@ -52,6 +52,7 @@ button[type="submit"] {
 button[type="submit"]:hover {
     background-color: #545454;
 }
+
 .navbar {
     margin-bottom: 10%;
     background-color: #1a1a1a;

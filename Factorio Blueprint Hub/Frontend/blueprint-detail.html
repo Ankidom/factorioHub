@@ -4,32 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blueprint Details</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<nav class="navbar navbar-dark bg-dark">
-    <div class="container">
-        <a class="navbar-brand" href="index.html">Home</a>
-        <a class="navbar-brand" href="uploadBlueprint.html">Upload Blueprint</a>
-        <a class="navbar-brand" href="about.html">About</a>
-    </div>
+<nav class="navbar">
+    <a class="navbar-logo" href="index.html">Factorio Blueprint Hub</a>
+    <ul class="navbar-menu">
+        <li class="navbar-menu-item">
+            <a class="navbar-menu-link" href="index.html">Home</a>
+        </li>
+        <li class="navbar-menu-item">
+            <a class="navbar-menu-link" href="uploadBlueprint.html">Upload Blueprint</a>
+        </li>
+        <li class="navbar-menu-item">
+            <a class="navbar-menu-link" href="about.html">About</a>
+        </li>
+    </ul>
 </nav>
 
-<button id="editBlueprintButton" class="btn btn-primary mt-3">Bewerk Blueprint</button>
-<button id="deleteBlueprintButton" class="btn btn-danger mt-3">Verwijder Blueprint</button>
 
-<div class="container mt-5">
+<div class="container">
     <div class="blueprint-details">
-        <h1 id="blueprintTitle"></h1>
-        <div id="blueprintImageContainer"></div>
-        <p id="blueprintUsername"></p>
-        <p id="blueprintDate"></p>
-        <p id="blueprintDescription"></p>
+        <div class="left-column">
+            <div id="blueprintImageContainer"></div>
+            <div id="blueprintUserContainer">
+                <p id="blueprintUsername"></p>
+                <p id="blueprintDate"></p>
+            </div>
+        </div>
+        <div class="right-column">
+            <h1 id="blueprintTitle"></h1>
+            <div id="blueprintDescriptionContainer">
+                <p id="blueprintDescription"></p>
+            </div>
+        </div>
     </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 <script src="public/js/blueprint-detail.js"></script>
 </body>
 </html>
