@@ -10,15 +10,16 @@ window.onload = function() {
             showErrorMessage(decodeURIComponent(message));
         }
     }
-
     populateTagsDropdown();
 }
+
+let selectedTags = [];
 
 async function populateTagsDropdown() {
     const tagsDropdown = document.getElementById('tagsDropdown');
 
     try {
-        const response = await fetch('/available-tags');
+        const response = await fetch('http://localhost:3000/available-tags');
         const tags = await response.json();
 
         tags.forEach(tag => {
@@ -39,55 +40,42 @@ function addTagToInput(tag) {
     const selectedTagsInput = document.getElementById('selectedTags');
     const tagsDropdownButton = document.getElementById('tagsDropdownButton');
 
-    if (selectedTagsInput) {
-        selectedTagsInput.value += tag.id + ',';
+    if (!selectedTags.includes(tag.id)) {
+        selectedTags.push(tag.id);
+        selectedTagsInput.value = selectedTags.join(',');
         tagsDropdownButton.textContent = tag.name;
     }
 }
-
 
 document.getElementById('uploadForm').addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const formData = new FormData(e.target);
-    const selectedTags = document.getElementById('selectedTags').value.split(',').map(tagId => tagId.trim()).filter(tagId => tagId !== '');
+    const selectedTags = document.getElementById('selectedTags').value.split(',');
+
     formData.append('tags', JSON.stringify(selectedTags));
 
-    // Log the contents of the FormData object
-    for (let pair of formData.entries()) {
-        console.log(pair[0]+ ', '+ pair[1]);
-    }
-
-
-
-    if (selectedTags.length === 0 || (selectedTags.length === 1 && selectedTags[0] === '')) {
-        showErrorMessage('Please select at least one tag.');
-        return;
-    }
-
-    // Verander de naam van de FormData entry van 'tags' naar 'selectedTags'
-    formData.append('selectedTags', JSON.stringify(selectedTags));
-
     try {
-        const response = await fetch('/blueprints', {
+        const response = await fetch('http://localhost:3000/blueprints', {
             method: 'POST',
-            body: formData
+            body: formData,
+            credentials: 'include'
         });
 
         if (response.ok) {
-            window.location.href = response.url;
+            window.location.href = '/Frontend/index.html';
         } else {
             const error = await response.text();
-            showErrorMessage(error);
+            console.error('An error occurred:', error);
         }
     } catch (error) {
         console.error('An error occurred:', error);
-        showErrorMessage('An error occurred while uploading the blueprint.');
     }
 });
 
-    function showSuccessMessage(message) {
-        const uploadMessage = document.getElementById('uploadMessage');
+
+function showSuccessMessage(message) {
+    const uploadMessage = document.getElementById('uploadMessage');
     uploadMessage.innerHTML = `
         <div class="alert alert-success" role="alert">
             ${message}
@@ -102,13 +90,4 @@ function showErrorMessage(message) {
             ${message}
         </div>
     `;
-}
-
-function clearForm() {
-    document.getElementById('username').value = '';
-    document.getElementById('email').value = '';
-    document.getElementById('blueprintTitle').value = '';
-    document.getElementById('blueprintString').value = '';
-    document.getElementById('filename').value = '';
-    document.getElementById('tags').value = '';
 }

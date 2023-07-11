@@ -1,8 +1,12 @@
 let blueprints = [];
 
-// Fetch blueprint data from the server
-fetch('/blueprints')
-    .then(response => response.json())
+fetch('http://localhost:3000/blueprints')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
         blueprints = data;
         displayBlueprints(data);
@@ -23,19 +27,19 @@ function displayBlueprints(data) {
 
         // Maak een ankerlink rondom de blueprint
         const link = document.createElement('a');
-        link.href = '/blueprint-detail?id=' + blueprint.id;
+        link.href = 'blueprint-detail.html?id=' + blueprint.id;
 
 
         const image = document.createElement('img');
-        image.src = '/uploads/' + blueprint.image;
+        image.src = 'http://localhost:3000/uploads/' + blueprint.image;
         image.alt = 'Blueprint Image';
 
-        const title = document.createElement('p');  // Changed 'username' to 'title'
-        title.textContent = blueprint.title;  // Changed 'username' to 'title'
-        title.classList.add('title');  // Changed 'username' to 'title'
+        const title = document.createElement('p');
+        title.textContent = blueprint.title;
+        title.classList.add('title');
 
         link.appendChild(image);
-        link.appendChild(title);  // Changed 'username' to 'title'
+        link.appendChild(title);
         blueprintItem.appendChild(link);
         blueprintsRow.appendChild(blueprintItem);
     });
@@ -43,8 +47,13 @@ function displayBlueprints(data) {
 
 
 // Fetch tags from the server
-fetch('/available-tags')
-    .then(response => response.json())
+fetch('http://localhost:3000/available-tags')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(tags => {
         const selectElement = document.getElementById('tagFilter'); // Veranderd van 'tagSelect' naar 'tagFilter'
         tags.forEach(tag => {
@@ -57,7 +66,6 @@ fetch('/available-tags')
     .catch(error => {
         console.error('An error occurred while fetching tags:', error);
     });
-
 
 
 document.getElementById('tagFilter').addEventListener('change', (event) => {
@@ -77,7 +85,6 @@ document.getElementById('tagFilter').addEventListener('change', (event) => {
 
     displayBlueprints(filteredBlueprints);
 });
-
 
 
 document.getElementById('titleFilter').addEventListener('input', (event) => {

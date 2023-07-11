@@ -6,12 +6,18 @@ const cors = require('cors');
 const multer = require('multer');
 const app = express();
 
-app.use(cors());
+var corsOptions = {
+    origin: 'http://localhost:63343', // Vervang dit door het domein van je client
+    credentials: true
+};
+
+app.use(express.static(path.join(__dirname, '../frontend')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, '../Frontend')));
-app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
+app.use(cors(corsOptions));
+
 
 // Initialize SQLite database
 let db = new sqlite3.Database('./db.sqlite', (err) => {
@@ -31,7 +37,6 @@ db.serialize(function () {
     db.run("CREATE TABLE IF NOT EXISTS Blueprints (ID INTEGER PRIMARY KEY AUTOINCREMENT, Title TEXT NOT NULL, BlueprintString TEXT NOT NULL, Image TEXT NOT NULL, DateOfUpload TIMESTAMP DEFAULT CURRENT_TIMESTAMP, UserID INTEGER NOT NULL, FOREIGN KEY (UserID) REFERENCES Users(ID))");
 });
 
-// Create Tags table
 // Create Tags table and populate it with predefined tags
 db.serialize(function () {
     db.run("CREATE TABLE IF NOT EXISTS Tags (ID INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT NOT NULL)");
@@ -66,19 +71,31 @@ db.serialize(function () {
 // Set up multer storage for blueprint image upload
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, './uploads');
+        cb(null, 'uploads/');
     },
     filename: function (req, file, cb) {
         cb(null, file.originalname);
     }
 });
 
+
+// Serve blueprint detail HTML page
+app.get('/blueprint-detail.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'blueprint-detail.html'));
+});
+
+// Serve blueprint upload HTML page
+app.get('/uploadBlueprint.html', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend', 'uploadBlueprint.html'));
+});
+
+
 const upload = multer({ storage: storage });
 app.post('/blueprints', upload.single('blueprintImage'), (req, res) => {
     const { username, email, blueprintTitle, blueprintString, tags } = req.body;
     const { filename } = req.file;
     if (!username || !email || !blueprintTitle || !blueprintString || !filename || !tags) {
-        return res.status(400).send('Please fill in all required fields and select at least one tag.');
+        return res.status(400).json({ error: 'Please fill in all required fields and select at least one tag.' });
     }
 
     const selectedTags = JSON.parse(tags);
@@ -107,7 +124,6 @@ app.post('/blueprints', upload.single('blueprintImage'), (req, res) => {
                     }
 
                     userId = row.ID;
-                    console.log('Inserting Tag:', selectedTags); // Gebruik selectedTags in plaats van tagId
 
                     insertBlueprint(res, userId, blueprintTitle, blueprintString, filename, selectedTags);
                 });
@@ -141,24 +157,21 @@ function insertBlueprint(res, userId, blueprintTitle, blueprintString, filename,
                 'INSERT INTO Blueprint_Tag (BlueprintID, TagID) VALUES (?, ?)'
             );
 
-            console.log('selectedTags:', selectedTags);
-
             selectedTags.forEach(tagId => {
-                console.log('Processing tagId:', tagId);
-
                 insertStatement.run(blueprintId, tagId, function (err) {
                     if (err) {
                         console.error('Error inserting tagId:', err.message);
                         return res.status(500).send(`uploadBlueprint.html?success=false&message=${encodeURIComponent(err.message)}`);
                     }
-
-                    console.log('Successfully inserted tagId:', tagId);
                 });
             });
 
             insertStatement.finalize();
 
-            res.redirect(`/uploadBlueprint.html?success=true&message=${encodeURIComponent('Blueprint uploaded successfully!')}`);
+            // Na het voltooien van de upload, in plaats van de redirect:
+            res.status(200).json({ success: true, message: 'Blueprint uploaded successfully!' });
+
+
         }
     );
 }
@@ -199,27 +212,6 @@ app.get('/blueprints', (req, res) => {
     });
 });
 
-// Serve index.html
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../Frontend/index.html'));
-});
-
-// Serve blueprint-detail.html
-app.get('/blueprint-detail/:id', (req, res) => {
-    res.sendFile(path.join(__dirname, '../Frontend/blueprint-detail.html'));
-});
-
-// Serve blueprint-detail.html
-app.get('/blueprint-detail', (req, res) => {
-    res.sendFile(path.join(__dirname, '../Frontend/blueprint-detail.html'));
-});
-
-// Serve blueprint-detail.html
-app.get('/blueprint-detail', (req, res) => {
-    res.sendFile(path.join(__dirname, '../Frontend/blueprint-detail.html'));
-});
-
-
 // Serve blueprint detail JSON data
 app.get('/api/blueprints/:id', (req, res) => {
     const blueprintId = req.params.id;
@@ -250,7 +242,6 @@ app.get('/api/blueprints/:id', (req, res) => {
 
 app.delete('/api/blueprints/:id', (req, res) => {
     const blueprintId = req.params.id;
-
     db.run('DELETE FROM Blueprints WHERE ID = ?', [blueprintId], (err) => {
         if (err) {
             console.error(err.message);
@@ -262,7 +253,7 @@ app.delete('/api/blueprints/:id', (req, res) => {
 });
 
 
-app.put('/api/blueprints/:id', (req, res) => {
+app.put('/blueprints/:id', (req, res) => {
     const id = req.params.id;
     const { title, blueprintString } = req.body;
 
@@ -291,7 +282,6 @@ app.get('/available-tags', (req, res) => {
         res.json(tags);
     });
 });
-
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Server is up and running on port ${port}`));

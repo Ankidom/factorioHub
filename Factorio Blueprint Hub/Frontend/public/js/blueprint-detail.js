@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     let blueprintId = new URLSearchParams(window.location.search).get('id');
 
-    fetch('/api/blueprints/' + blueprintId)
+    fetch('http://localhost:3000/api/blueprints/' + blueprintId)
         .then(response => response.json())
         .then(data => {
             document.getElementById('blueprintTitle').textContent = data.title;
@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('blueprintDescription').textContent = data.blueprintString;
 
             const image = document.createElement('img');
-            image.src = '/uploads/' + data.image;
+            image.src = 'http://localhost:3000/uploads/' + data.image;
             image.alt = 'Blueprint Image';
             document.getElementById('blueprintImageContainer').appendChild(image);
         })
@@ -20,26 +20,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const deleteButton = document.getElementById('deleteBlueprintButton');
 
-// In your blueprint-detail.js file, add a click event to the 'Edit Blueprint' button
-
-    const editButton = document.getElementById('editBlueprintButton');
-
-    if(editButton) {
-        editButton.addEventListener('click', () => {
-            window.location.href = '/blueprint-update.html?id=' + blueprintId;
-        });
-    } else {
-        console.error("'editButton' is not found in the document.");
-    }
-
     if(deleteButton) {
         deleteButton.addEventListener('click', () => {
-            fetch('/api/blueprints/' + blueprintId, { method: 'DELETE' })
+            fetch('http://localhost:3000/api/blueprints/' + blueprintId, { method: 'DELETE' })
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
-                    window.location.href = '/index.html';
+                    window.location.href = '/Frontend/index.html';
                 })
                 .catch(error => {
                     console.error('An error occurred while deleting the blueprint:', error);
